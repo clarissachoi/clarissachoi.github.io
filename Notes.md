@@ -64,11 +64,3 @@ Re-supply full content only when: starting a new chat session/context that hasn'
 Per-phase prompts: just reference the relevant section number (e.g. "Implement §12.3 Experience per Homepage.md") rather than re-pasting.
 
 Once V1 ships, update the MDs themselves to log deviations, so they stay the source of truth.
-
-
-git init                         
-git remote add origin https://github.com/clarissachoi/clarissachoi.github.io
-git branch -M main
-git add .
-git commit -m "Initial commit"
-git push -u origin main

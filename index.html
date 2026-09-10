@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clarissa Choi — Portfolio</title>
+  <meta name="description" content="Clarissa Choi — Mathematics and Computer Science. Data, technology, and TradingJoe." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="page">
+    <header class="nav">
+      <nav class="nav__inner container" aria-label="Primary">
+        <a class="nav__brand mono-label" href="#hero">Clarissa Choi</a>
+        <ul class="nav__links">
+          <li><a href="#experience">EXPERIENCE</a></li>
+          <li><a href="#projects">PROJECTS</a></li>
+          <li><a href="#skills">SKILLS</a></li>
+          <li><a href="#about">ABOUT</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section id="hero" class="hero" aria-label="Introduction">
+        <div class="hero__inner container">
+          <h1 class="hero__name" id="hero-name"></h1>
+          <p class="hero__subtitle" id="hero-subtitle"></p>
+          <p class="hero__tagline" id="hero-tagline"></p>
+          <div class="hero__links" id="hero-links"></div>
+        </div>
+      </section>
+
+      <section id="experience" class="experience" aria-label="Experience">
+        <div class="section-head">
+          <div class="section-head__inner container">
+            <h2 class="section-title">// EXPERIENCE</h2>
+            
+          </div>
+        </div>
+        <div class="container">
+          <div class="panelframe">
+            <div class="grid">
+              <nav class="rail" id="experience-rail" aria-label="Experience timeline">
+                <span class="rail-label mono-label">NOW</span>
+                <div class="nodes" id="nodes"></div>
+              </nav>
+              <section class="detail" id="detail" aria-live="polite"></section>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="projects" class="projects" aria-label="Projects">
+        <div class="section-head">
+          <div class="section-head__inner container projects__header">
+            <span class="section-title">// PROJECTS</span>
+            <span class="mono-label projects__count" id="projects-count"><!-- filled by JS --></span>
+          </div>
+        </div>
+
+        <div class="container">
+          <div class="projects__grid" id="projects-grid">
+            <!-- project cards injected here by JS -->
+          </div>
+        </div>
+      </section>
+
+      <section id="skills" class="skills" aria-label="Skills"></section>
+
+      <section id="about" class="about" aria-label="About">
+        <div class="section-head">
+          <div class="section-head__inner container">
+            <span class="section-title">// ABOUT</span>
+          </div>
+        </div>
+
+        <div class="container">
+          <div class="about__container">
+            <div class="about__text" id="about-text">
+              <h2 class="about__heading" id="about-heading"></h2>
+              <p class="about__intro" id="about-intro"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" aria-label="Footer"></footer>
+  </div>
+
+  <div class="modal" id="project-modal" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal__header">
+        <span class="modal__label mono-label" id="modal-label">PROJECT_01</span>
+        <button class="modal__close" data-close-modal aria-label="Close"> X </button>
+      </div>
+
+      <h2 class="modal__name" id="modal-title"></h2>
+      <hr class="modal__divider" />
+
+      <p class="modal__summary" id="modal-summary"></p>
+      <div class="modal__stack" id="modal-stack"></div>
+      <div class="modal__demo" id="modal-demo"></div>
+
+      <div class="modal__links" id="modal-links"></div>
+    </div>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
