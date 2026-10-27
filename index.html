@@ -21,6 +21,7 @@
       <nav class="nav__inner container" aria-label="Primary">
         <a class="nav__brand mono-label" href="#hero">Clarissa Choi</a>
         <ul class="nav__links">
+          <li><a href="#hero">HOME</a></li>
           <li><a href="#experience">EXPERIENCE</a></li>
           <li><a href="#projects">PROJECTS</a></li>
           <li><a href="#skills">SKILLS</a></li>
@@ -31,6 +32,7 @@
 
     <main id="main">
       <section id="hero" class="hero" aria-label="Introduction">
+        <div class="hero__photos" id="hero-photos" aria-hidden="true"></div>
         <div class="hero__inner container">
           <h1 class="hero__name" id="hero-name"></h1>
           <p class="hero__subtitle" id="hero-subtitle"></p>
@@ -74,7 +76,24 @@
         </div>
       </section>
 
-      <section id="skills" class="skills" aria-label="Skills"></section>
+      <section id="skills" class="skills" aria-label="Skills">
+        <div class="section-head">
+          <div class="section-head__inner container skills__header">
+            <h2 class="section-title">// SKILLS</h2>
+            <span class="mono-label skills__count" id="skills-count"><!-- filled by JS --></span>
+          </div>
+        </div>
+
+        <div class="container">
+          <div class="skills__layout">
+            <div class="skills__corner">
+              <p class="skills__hint" id="skills-hint" aria-hidden="true"><!-- filled by JS --></p>
+              <aside class="skills__key" id="skills-key" aria-label="Strength key"><!-- filled by JS --></aside>
+            </div>
+            <div class="skills__map" id="skills-map"><!-- filled by JS --></div>
+          </div>
+        </div>
+      </section>
 
       <section id="about" class="about" aria-label="About">
         <div class="section-head">
@@ -87,14 +106,29 @@
           <div class="about__container">
             <div class="about__text" id="about-text">
               <h2 class="about__heading" id="about-heading"></h2>
-              <p class="about__intro" id="about-intro"></p>
+              <div class="about__intro" id="about-intro"></div>
             </div>
+            <div class="about__collage" id="about-collage"></div>
           </div>
         </div>
       </section>
     </main>
 
-    <footer class="footer" aria-label="Footer"></footer>
+    <footer class="footer" aria-label="Footer">
+      <div class="footer__inner container">
+        <div class="footer__top">
+          <div class="footer__id">
+            <p class="footer__name" id="footer-name"></p>
+            <p class="footer__subtitle mono-label" id="footer-subtitle"></p>
+          </div>
+          <nav class="footer__links" id="footer-links" aria-label="Contact links"><!-- filled by JS --></nav>
+        </div>
+        <div class="footer__bottom mono-label">
+          <span id="footer-copyright"></span>
+          <a class="footer__top-link" href="#hero">Back to top &uarr;</a>
+        </div>
+      </div>
+    </footer>
   </div>
 
   <div class="modal" id="project-modal" hidden>

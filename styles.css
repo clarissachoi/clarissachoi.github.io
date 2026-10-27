@@ -1,8 +1,11 @@
 /* ============================
    1. CSS VARIABLES
-   (fonts are loaded via <link> tags in index.html <head>
-   for performance — see font-family declarations below)
+   (Inter and Space Mono are loaded via <link> tags in index.html
+   <head> for performance; Caveat is loaded below since it's only
+   used in one place — see font-family declarations below)
    ============================ */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap');
+
 :root {
   /* Color */
   --background: #FAF9F6;
@@ -20,6 +23,7 @@
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'Space Mono', 'SFMono-Regular', Consolas, monospace;
+  --font-caption: 'Caveat', var(--font-sans), cursive;
 
   /* Type scale */
   --text-xs: 0.75rem;   /* 12px — mono metadata, small labels */
@@ -44,6 +48,7 @@
   --border-width: 1px;
   --border-frame: #4A4A4A;
   --radius: 0;
+  --nav-height: 4rem; /* sticky nav bar, excluding its 1px bottom border */
   --container-max: 1200px;
   --frame-margin: 1rem;  /* 4px — space between viewport edge and page border */
 
@@ -72,6 +77,8 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  /* Anchor jumps (nav links, "Back to top") stop just below the sticky nav. */
+  scroll-padding-top: calc(var(--nav-height) + var(--border-width));
 }
 
 body {
@@ -255,11 +262,11 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 4rem;
+  height: var(--nav-height);
 }
 
 .nav__brand {
-  font-size: var(--text-sm);
+  font-size: var(--text-bs);
 }
 
 .nav__links {
@@ -269,7 +276,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .nav__links a {
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 900;
   transition: color var(--transition-fast);
 }
 
@@ -278,9 +285,21 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--accent);
 }
 
+/* Phones: name on its own row above the links, so all five links fit.
+   --nav-height grows to match, which keeps anchor jumps clear of the nav. */
 @media (max-width: 640px) {
+  :root {
+    --nav-height: 5.5rem;
+  }
+
+  .nav__inner {
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
   .nav__links {
-    gap: var(--space-3);
+    gap: var(--space-2);
   }
 
   .nav__links a {
@@ -291,12 +310,142 @@ h1, h2, h3, h4, h5, h6 {
 /* ============================
    8. HERO
    ============================ */
+.hero {
+  position: relative;
+  /* Keeps the photos' and drag hint's z-indexes inside the hero, so they
+     always pass under the sticky nav when scrolled. */
+  isolation: isolate;
+  min-height: 640px;
+}
+
 .hero__inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
+  min-height: inherit;
   padding-block: var(--space-7);
+  /* Its box spans the full hero width even where there's no visible
+     text, which would otherwise steal pointer events from any hero
+     photo placed underneath at the same z-index. Only the links
+     need to stay clickable. */
+  pointer-events: none;
+}
+
+.hero__link {
+  pointer-events: auto;
+}
+
+/* ---- Hero photos ----
+   Configured in data.js (heroPhotos). Each photo is an absolutely
+   positioned figure; --top/--offset/--rotate/--width/--ratio are set
+   inline per photo by script.js from that config. */
+.hero__photos {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Polaroid-style card shared by the hero photos and the about collage;
+   built by createPhotoCard() in script.js. */
+.photo-card {
+  background: var(--bg-raised);
+  border: var(--border-width) solid var(--border-frame);
+  padding: var(--space-1) var(--space-1) var(--space-2);
+  box-shadow: 5px 5px 0 rgba(24, 18, 14, 0.1);
+}
+
+.photo-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--ratio);
+  object-fit: cover;
+  -webkit-user-drag: none;
+}
+
+.photo-card__caption {
+  margin-top: var(--space-1);
+  font-family: var(--font-caption);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--border-frame);
+  text-align: center;
+}
+
+/* Optional link under a caption (`link` in the photo data), on its own line. */
+.photo-card__link {
+  display: block;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.hero__photo {
+  position: absolute;
+  top: var(--top);
+  width: var(--width);
+  transform: rotate(var(--rotate));
+  transform-origin: 50% 0; /* swing (script.js) pivots from a pin at the top */
+  pointer-events: auto;
+  touch-action: none;
+  cursor: grab;
+  transition: scale 120ms ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.hero__photo--left {
+  left: var(--offset);
+}
+
+.hero__photo--right {
+  right: var(--offset);
+}
+
+.hero__photo--dragging {
+  cursor: grabbing;
+  scale: 1.05;
+}
+
+/* "drag me!" note, shown briefly by initDragHint() in script.js. Lives
+   inside .hero__photos so it hides along with the photos on small screens. */
+.hero__drag-hint {
+  position: absolute;
+  inset: 0;
+  z-index: 1000; /* above photos, whose z-index climbs as they're dragged (contained by .hero) */
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.hero__drag-hint--visible {
+  opacity: 1;
+}
+
+.hero__drag-hint svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.hero__drag-hint-label {
+  position: absolute;
+  font-family: var(--font-caption);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .hero__photos {
+    display: none;
+  }
 }
 
 .hero__name {
@@ -343,7 +492,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .hero__link:hover,
 .hero__link:focus-visible {
-  background-color: var(--text-primary);
+  background-color: var(--accent);
   color: var(--background);
 }
 
@@ -498,6 +647,32 @@ h1, h2, h3, h4, h5, h6 {
 
 .detail {
   padding: var(--space-4);
+  overflow: hidden;
+}
+
+/* Slide content in when switching jobs; direction follows the rail. */
+.detail.slide-next > *,
+.detail.slide-prev > * {
+  animation: detail-slide 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.detail.slide-next > * { --slide-from: 2rem; }
+.detail.slide-prev > * { --slide-from: -2rem; }
+
+.detail > :nth-child(2) { animation-delay: 0.04s; }
+.detail > :nth-child(3) { animation-delay: 0.08s; }
+.detail > :nth-child(4) { animation-delay: 0.1s; }
+.detail > :nth-child(n + 5) { animation-delay: 0.12s; }
+
+@keyframes detail-slide {
+  from {
+    opacity: 0;
+    transform: translateX(var(--slide-from));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .detail-head {
@@ -579,9 +754,14 @@ h1, h2, h3, h4, h5, h6 {
 
 .projects__grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  border-top: var(--border-width) solid var(--border);
-  border-left: var(--border-width) solid var(--border);
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+@media (max-width: 1024px) {
+  .projects__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 640px) {
@@ -595,9 +775,26 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   align-items: flex-start;
   padding: var(--space-4);
-  border-right: var(--border-width) solid var(--border);
-  border-bottom: var(--border-width) solid var(--border);
+  background: var(--bg-raised);
+  border: var(--border-width) solid var(--border);
   min-width: 0;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+/* Lifts on hover (or while its button has keyboard focus), with the same
+   offset shadow as the photo cards. */
+.project-card:hover,
+.project-card:focus-within {
+  transform: scale(1.02);
+  border-color: var(--border-frame);
+  box-shadow: 5px 5px 0 rgba(24, 18, 14, 0.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card:hover,
+  .project-card:focus-within {
+    transform: none;
+  }
 }
 
 .project-card__label {
@@ -618,6 +815,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .project-card__status[data-status="DEPLOYED"] {
   color: var(--accent);
+  text-decoration: underline;
 }
 
 .project-card__summary {
@@ -630,6 +828,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .project-card__stack {
   margin-top: var(--space-3);
+  margin-bottom: var(--space-4); /* minimum gap above the button */
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 0.02em;
@@ -637,7 +836,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .project-card__cta {
-  margin-top: var(--space-4);
+  margin-top: auto; /* pins to the card bottom, so buttons line up across a row */
   padding: var(--space-1) var(--space-3);
   border: var(--border-width) solid var(--text-primary);
   background: none;
@@ -650,7 +849,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .project-card__cta:hover,
 .project-card__cta:focus-visible {
-  background-color: var(--text-primary);
+  background-color: var(--accent);
   color: var(--background);
 }
 
@@ -778,7 +977,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .modal__link:hover,
 .modal__link:focus-visible {
-  background-color: var(--text-primary);
+  background-color: var(--accent);
   color: var(--background);
 }
 
@@ -797,12 +996,62 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .about__container {
-  max-width: 56.25rem; /* 900px */
+  max-width: 72rem; /* 1152px */
   margin-inline: auto;
 }
 
+/* Clears the floated text so the section wraps the whole collage. */
+.about__container::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+/* Floated so the collage's cards flow beside it, then on below it. */
 .about__text {
-  margin-bottom: var(--space-4);
+  float: left;
+  width: 50%;
+  margin: 0 var(--space-4) var(--space-2) 0;
+}
+
+/* Photo collage: inline cards wrapping around the text. Every photo is the
+   same height (scaled to the window height so the section fits on screen);
+   `ratio` sets each card's width, `drop` and `rotate` (aboutPhotos in
+   data.js) loosen the rows. Cards never overlap. */
+.about__collage {
+  --photo-h: clamp(90px, 14vh, 130px);
+  text-align: center;
+}
+
+.about__photo {
+  display: inline-block;
+  vertical-align: top;
+  margin: var(--drop) var(--space-1) var(--space-2);
+  transform: rotate(var(--rotate));
+  text-align: center;
+}
+
+.about__photo img {
+  width: calc(var(--photo-h) * var(--ratio));
+  height: var(--photo-h);
+}
+
+.about__photo .photo-card__caption {
+  margin-top: 0.25rem;
+  font-size: 1rem;
+}
+
+@media (max-width: 640px) {
+  .about__text {
+    float: none;
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .about__collage {
+    --photo-h: 90px;
+    margin-top: var(--space-3);
+  }
 }
 
 .about__heading {
@@ -815,18 +1064,564 @@ h1, h2, h3, h4, h5, h6 {
 
 .about__intro {
   margin: 0;
-  max-width: 40ch;
   font-family: var(--font-sans);
   font-size: var(--text-sm);
   color: var(--text-muted);
   line-height: 1.6;
 }
 
+.about__intro p {
+  margin: 0;
+}
+
+.about__intro p + p {
+  margin-top: 1em;
+}
+
+.about__intro a {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 /* ============================
-   13. FOCUS STATES
+   13. SKILLS
+   ============================
+   Mind map rendered by skills.js from skillsData / strengthTiers in
+   data.js. Wide: a fixed ring of categories around the hub, each opening
+   its skills beside it on hover, focus or tap. Narrow (container query on
+   .skills__layout): a stacked list. Colours arrive per skill as --c, size
+   factor as --s. */
+.skills {
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-1);
+}
+
+.skills .section-head {
+  margin-bottom: calc(var(--space-4) + var(--space-1));
+}
+
+.skills__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.skills__count {
+  font-weight: 400;
+}
+
+.skills__layout {
+  position: relative;
+  container: skills / inline-size;
+}
+
+/* ---- Corner: hint + key ----
+   The always-on hint and the key (one sample entry showing how to read
+   the map) share a row: the top-right corner of the ring layout, or above
+   the stacked layout. */
+.skills__corner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-1) var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+@container skills (min-width: 980px) {
+  .skills__corner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 6;
+    margin: 0;
+  }
+}
+
+.skills__key {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  width: max-content;
+  padding: 0.5rem 0.75rem;
+  border: var(--border-width) solid var(--border-frame);
+  background: var(--background);
+}
+
+
+.skills__key-title {
+  font-family: var(--font-sans);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.skills__key-sample .skills__leaf {
+  padding: 0;
+  font-size: 1.25rem;
+}
+
+.skills__key-sample .skills__leaf sup {
+  font-size: 0.8rem;
+}
+
+/* ---- Map ---- */
+.skills__map {
+  position: relative;
+  --skills-scale: 0.85;
+  --skills-line: var(--text-primary);
+}
+
+.skills__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.skills__line {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.skills__line--trunk {
+  stroke: var(--skills-line);
+  stroke-width: 1.4;
+}
+
+.skills__hub,
+.skills__leaf {
+  position: relative;
+  z-index: 1;
+}
+
+.skills__hub {
+  display: inline-block;
+  padding: 0.45em 1.2em;
+  border-radius: 999px;
+  background: var(--text-primary);
+  color: var(--background);
+  font-family: var(--font-sans);
+  font-size: calc(var(--text-md) * var(--skills-scale, 1));
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.skills__cat-label {
+  display: block;
+  width: max-content;
+  max-width: 11.5rem;
+  padding: 0.4em 0.95em;
+  border: 1.6px solid var(--accent);
+  border-radius: 30px;
+  background: var(--accent);
+  font-family: var(--font-sans);
+  font-size: calc(var(--text-base) * var(--skills-scale, 1));
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--background);
+  cursor: pointer;
+}
+
+.skills__leaf {
+  padding: 0.05em 0.25em;
+  background: var(--background);
+  color: var(--c, var(--text-primary));
+  font-family: var(--font-sans);
+  font-size: calc((0.95rem + var(--s, 0) * 0.7rem) * var(--skills-scale, 1));
+  font-weight: 600;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.skills__leaf--top {
+  font-weight: 700;
+}
+
+/* Hover: accent colour and a small zoom, lifted above its neighbours. */
+.skills__map .skills__leaf {
+  display: inline-block;
+  cursor: default;
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.skills__map .skills__leaf:hover {
+  z-index: 3;
+  color: var(--accent);
+  transform: scale(1.12);
+}
+
+.skills__leaf sup {
+  margin-left: 0.15em;
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 400;
+  line-height: 0;
+  vertical-align: super;
+}
+
+/* ---- Skill lists ----
+   Each category's skills form a small tree: a stub from the pill to a
+   vertical spine, and a tick from the spine to each skill. The spine is
+   drawn per item (::after) and the tick per item (::before). */
+.skills__pop {
+  width: max-content;
+}
+
+.skills__pop-item {
+  position: relative;
+  padding: 3px 0 3px 10px;
+}
+
+.skills__pop-item::before,
+.skills__pop-item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+}
+
+.skills__pop-item::before {
+  top: 50%;
+  width: 10px;
+  border-top: 1px solid var(--skills-line);
+}
+
+.skills__pop-item::after {
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid var(--skills-line);
+}
+
+.skills__pop-item:first-child::after {
+  top: 50%;
+}
+
+.skills__pop-item:last-child::after {
+  bottom: 50%;
+}
+
+/* ---- Hint ---- */
+.skills__hint {
+  font-family: var(--font-caption);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-muted);
+}
+
+/* Hint and arrow are temporary: skills.js adds --hint to the layout while
+   they should show (on entering view, until timeout or first interaction). */
+.skills__hint,
+.skills__hint-arrow {
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.skills__layout--hint .skills__hint,
+.skills__layout--hint .skills__hint-arrow {
+  opacity: 1;
+}
+
+.skills__hint-arrow,
+.hero__drag-hint-arrow {
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@keyframes skills-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(122, 38, 56, 0); }
+  50% { box-shadow: 0 0 0 6px rgba(122, 38, 56, 0.18); }
+}
+
+.skills__map--intro .skills__cat:not(.open) .skills__cat-label {
+  animation: skills-pulse 1.8s ease-in-out 0.8s 1;
+}
+
+/* ---- Ring layout (wide) ---- */
+@container skills (min-width: 980px) {
+  /* Nav + section header + stage take about 83% of the screen height;
+     --skills-chrome (nav + header) is measured by skills.js. */
+  .skills__map {
+    height: clamp(380px, calc(83vh - var(--skills-chrome, 160px)), 600px);
+    --ring-dx: clamp(190px, 18cqw, 210px);
+  }
+
+  .skills__hub {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .skills__cat {
+    position: absolute;
+    left: calc(50% + var(--dx) * var(--ring-dx));
+    top: var(--y);
+    z-index: 2;
+    transform: translate(-50%, -50%);
+  }
+
+  .skills__cat:hover,
+  .skills__cat:focus-within,
+  .skills__cat.open {
+    z-index: 5;
+  }
+
+  /* Keeps the pill above its list's hover wedge (below). */
+  .skills__cat-heading {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Opens on the outer side, vertically centred on the pill and flush
+     against it (the stub sits in the list's own padding), so moving the
+     pointer from pill to list never leaves the node. */
+  .skills__pop {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    z-index: 0;
+    padding-left: 22px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(6px, calc(-50% + var(--pop-shift, 0px)));
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+
+  /* The stub stays level with the pill even when the list is shifted. */
+  .skills__pop::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: calc(50% - var(--pop-shift, 0px));
+    width: 22px;
+    border-top: 1px solid var(--skills-line);
+  }
+
+  /* Invisible wedge from the pill out to the full height of an open list,
+     so a diagonal move from the pill to the first or last skill stays
+     inside the node. It sits under the pill, so the pill still gets
+     clicks. */
+  .skills__pop::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 100%;
+    z-index: -1;
+    width: 5.75rem;
+    clip-path: polygon(0 calc(50% - var(--pop-shift, 0px) - 1.5rem), 100% 0, 100% 100%, 0 calc(50% - var(--pop-shift, 0px) + 1.5rem));
+  }
+
+  .skills__cat:hover .skills__pop,
+  .skills__cat:focus-within .skills__pop,
+  .skills__cat.open .skills__pop {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(0, calc(-50% + var(--pop-shift, 0px)));
+  }
+
+  .skills__cat--right .skills__leaf {
+    transform-origin: left center;
+  }
+
+  /* Left-hand categories: everything mirrored, text right-aligned. */
+  .skills__cat--left .skills__pop {
+    left: auto;
+    right: 100%;
+    padding-left: 0;
+    padding-right: 22px;
+    text-align: right;
+    transform: translate(-6px, calc(-50% + var(--pop-shift, 0px)));
+  }
+
+  .skills__cat--left .skills__pop::before {
+    left: auto;
+    right: 0;
+  }
+
+  .skills__cat--left .skills__pop::after {
+    right: auto;
+    left: 100%;
+    clip-path: polygon(100% calc(50% - var(--pop-shift, 0px) - 1.5rem), 0 0, 0 100%, 100% calc(50% - var(--pop-shift, 0px) + 1.5rem));
+  }
+
+  .skills__cat--left .skills__pop-item {
+    padding: 3px 10px 3px 0;
+  }
+
+  .skills__cat--left .skills__pop-item::before,
+  .skills__cat--left .skills__pop-item::after {
+    left: auto;
+    right: 0;
+  }
+
+  .skills__cat--left .skills__leaf {
+    transform-origin: right center;
+  }
+}
+
+/* ---- Stacked layout (narrow) ---- */
+@container skills (max-width: 979.98px) {
+  .skills__map {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .skills__svg {
+    display: none;
+  }
+
+  .skills__corner {
+    justify-content: space-between;
+  }
+
+  .skills__cats {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .skills__cat {
+    max-width: 26rem;
+  }
+
+  .skills__cat-label {
+    width: 100%;
+    max-width: none;
+    text-align: left;
+  }
+
+  .skills__pop {
+    padding: var(--space-1) 0 var(--space-1) 1.4rem;
+  }
+
+  /* The spine runs up to the pill above. */
+  .skills__pop-item:first-child::after {
+    top: calc(-1 * var(--space-1));
+  }
+
+  /* Closed lists are clipped, not removed, so screen readers keep them. */
+  .skills__cat:not(.open) .skills__pop {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skills__pop {
+    transition: none;
+  }
+
+  .skills__map .skills__cat-label {
+    animation: none !important;
+  }
+
+  .skills__map .skills__leaf:hover {
+    transform: none;
+  }
+}
+
+/* ============================
+   14. FOCUS STATES
    ============================ */
 a:focus-visible,
 button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+/* ============================
+   15. FOOTER
+   ============================
+   Name, subtitle and contact links come from `hero` in data.js
+   (rendered by renderFooter() in script.js). */
+.footer {
+  border-top: var(--border-width) solid var(--border-frame);
+}
+
+.footer__inner {
+  padding-block: var(--space-5) var(--space-3);
+}
+
+.footer__id {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-2);
+}
+
+.footer__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.footer__name {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.footer__subtitle {
+  margin: var(--space-1) 0 0;
+}
+
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+}
+
+.footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  transition: color var(--transition-fast);
+}
+
+.footer__link:hover,
+.footer__link:focus-visible,
+.footer__top-link:hover,
+.footer__top-link:focus-visible {
+  color: var(--accent);
+}
+
+.footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1);
+  margin-top: var(--space-4);
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--border);
+}
+
+.footer__top-link {
+  transition: color var(--transition-fast);
+}
+
