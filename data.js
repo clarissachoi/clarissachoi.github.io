@@ -30,13 +30,25 @@ export const heroPhotos = [
     z: 2
   },
   {
+    src: "assets/images/headshot.jpg",
+    alt: "",
+    caption: "hi! this is me!",
+    side: "left",
+    top: "40%",
+    offset: "18%",
+    rotate: 5,
+    width: 150,
+    ratio: 3 / 4,
+    z: 1
+  },
+  {
     src: "assets/images/climb.png",
     alt: "",
     caption: "projecting a climb",
     side: "left",
-    top: "40%",
-    offset: "10%",
-    rotate: 5,
+    top: "60%",
+    offset: "3%",
+    rotate: -10,
     width: 150,
     ratio: 3 / 4,
     z: 1
