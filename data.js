@@ -79,17 +79,21 @@ export const heroPhotos = [
   }
 ];
 
+// Project cards. `summary` is the description, `highlights` the bullet
+// points. Each link in `links` shows as a button on the card; leave it
+// null to hide it.
 export const PROJECTS = [
   {
     id: "01",
     name: "TRADINGJOE",
     status: "DEPLOYED",
-    summary: "A trading and bartering platform built for NYU students.",
+    summary: "A trading and bartering platform built for NYU students. Students list items they no longer need, browse what others are offering, and arrange trades or swaps on campus without going through a third-party marketplace.",
+    highlights: [
+      "Built the mobile app with React Native and Expo",
+      "Designed a REST API with Express backed by MongoDB",
+      "Implemented listings, search, and trade requests between users"
+    ],
     stack: ["React Native", "Expo", "Express", "MongoDB"],
-    demo: {
-      type: "video",
-      src: "assets/tradingjoe/tradingjoe_demo.mp4"
-    },
     links: {
       live: "https://trading-joe-5aa4.vercel.app/",
       github: "https://github.com/clammy424/tradingjoe"
@@ -99,12 +103,13 @@ export const PROJECTS = [
     id: "02",
     name: "em.care",
     status: "DEPLOYED",
-    summary: "An end to end solution for managing your health. 2nd Place @ Google X Ruth.AI: AI for Social Good Hackathon",
+    summary: "An end to end solution for managing your health, bringing appointments, records, and day-to-day care into one place. Won 2nd Place at the Google X Ruth.AI: AI for Social Good Hackathon.",
+    highlights: [
+      "Built the web app in React and TypeScript",
+      "Developed the Python backend and AI features",
+      "Designed and shipped the full product within the hackathon timeframe"
+    ],
     stack: ["Typescript", "Python", "React"],
-    demo: {
-      type: "video",
-      src: "assets/em.care demo.mp4"
-    },
     links: {
       live: "https://em-care.vercel.app/",
       github: "https://github.com/clammy424/em"
@@ -114,9 +119,13 @@ export const PROJECTS = [
     id: "03",
     name: "ATLAS",
     status: "CURRENTLY BUILDING",
-    summary: "A social travel app for planning trips with friends.",
+    summary: "A social travel app for planning trips with friends. Groups collect ideas, build an itinerary together, and keep every plan in one shared space instead of scattered group chats.",
+    highlights: [
+      "Building a shared, collaborative itinerary",
+      "Designing the group planning flow",
+      "Setting up the front end with React and Vite"
+    ],
     stack: ["React", "Vite"],
-    demo: { type: null, src: null },
     links: {
       live: null,
       github: "https://github.com/clammy424/atlas"

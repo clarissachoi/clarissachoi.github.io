@@ -491,18 +491,30 @@ function renderProjectsCount() {
 }
 
 function renderCard(project) {
+  const links = [
+    project.links.live && { label: "LIVE SITE", href: project.links.live },
+    project.links.github && { label: "GITHUB", href: project.links.github }
+  ].filter(Boolean);
+
   return `
-    <article class="project-card" data-project-id="${project.id}">
+    <article class="project-card" data-project-id="${project.id}" data-status="${project.status}">
       <div class="project-card__label mono-label">PROJECT_${project.id}</div>
       <h3 class="project-card__name">${project.name}</h3>
       <div class="project-card__status mono-label" data-status="${project.status}">
         ${project.status}
       </div>
-      <p class="project-card__summary">${project.summary}</p>
       <div class="project-card__stack">${project.stack.join(" · ")}</div>
-      <button class="project-card__cta" data-open-modal="${project.id}">
-        VIEW PROJECT
-      </button>
+      <p class="project-card__summary">${project.summary}</p>
+      ${
+        project.highlights?.length
+          ? `<ul class="project-card__highlights">${project.highlights.map((h) => `<li>${h}</li>`).join("")}</ul>`
+          : ""
+      }
+      <div class="project-card__links">
+        ${links
+          .map((l) => `<a class="project-card__link" href="${l.href}" target="_blank" rel="noopener noreferrer">${l.label}</a>`)
+          .join("")}
+      </div>
     </article>
   `;
 }
@@ -516,68 +528,6 @@ function renderProjectsGrid() {
 
 renderProjectsCount();
 renderProjectsGrid();
-
-const modal = document.getElementById("project-modal");
-const projectsGridEl = document.getElementById("projects-grid");
-
-function openModal(id) {
-  const project = PROJECTS.find((p) => p.id === id);
-  if (!project) return;
-
-  populateModal(project);
-  modal.hidden = false;
-  document.body.style.overflow = "hidden";
-  modal.querySelector(".modal__close").focus();
-}
-
-function closeModal() {
-  modal.hidden = true;
-  document.body.style.overflow = "";
-}
-
-function populateModal(project) {
-  document.getElementById("modal-label").textContent = `PROJECT_${project.id}`;
-  document.getElementById("modal-title").textContent = project.name;
-  document.getElementById("modal-summary").textContent = project.summary;
-  document.getElementById("modal-stack").textContent = project.stack.join("   ");
-
-  const demoEl = document.getElementById("modal-demo");
-  if (project.demo?.type === "video") {
-    demoEl.innerHTML = `<video src="${project.demo.src}" controls></video>`;
-    demoEl.hidden = false;
-  } else if (project.demo?.type === "image") {
-    demoEl.innerHTML = `<img src="${project.demo.src}" alt="${project.name} preview" />`;
-    demoEl.hidden = false;
-  } else {
-    demoEl.innerHTML = "";
-    demoEl.hidden = true; // no empty placeholder box
-  }
-
-  const linksEl = document.getElementById("modal-links");
-  linksEl.innerHTML = "";
-  if (project.links.live) {
-    linksEl.innerHTML += `<a class="modal__link" href="${project.links.live}" target="_blank" rel="noopener">LIVE SITE</a>`;
-  }
-  if (project.links.github) {
-    linksEl.innerHTML += `<a class="modal__link" href="${project.links.github}" target="_blank" rel="noopener">GITHUB</a>`;
-  }
-}
-
-if (modal && projectsGridEl) {
-  projectsGridEl.addEventListener("click", (e) => {
-    const trigger = e.target.closest("[data-open-modal]");
-    if (!trigger) return;
-    openModal(trigger.dataset.openModal);
-  });
-
-  modal.addEventListener("click", (e) => {
-    if (e.target.closest("[data-close-modal]")) closeModal();
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !modal.hidden) closeModal();
-  });
-}
 
 function renderAboutText() {
   const headingEl = document.getElementById("about-heading");
