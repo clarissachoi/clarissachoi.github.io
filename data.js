@@ -96,7 +96,7 @@ export const PROJECTS = [
     stack: ["React Native", "Expo", "Express", "MongoDB"],
     links: {
       live: "https://trading-joe-5aa4.vercel.app/",
-      github: "https://github.com/clammy424/tradingjoe"
+      github: "https://github.com/clarissachoi/tradingjoe"
     }
   },
   {
@@ -112,7 +112,7 @@ export const PROJECTS = [
     stack: ["Typescript", "Python", "React"],
     links: {
       live: "https://em-care.vercel.app/",
-      github: "https://github.com/clammy424/em"
+      github: "https://github.com/clarissachoi/em"
     }
   },
   {
@@ -128,7 +128,7 @@ export const PROJECTS = [
     stack: ["React", "Vite"],
     links: {
       live: null,
-      github: "https://github.com/clammy424/atlas"
+      github: "https://github.com/clarissachoi/atlas"
     }
   }
 ];
