@@ -30,7 +30,7 @@ export const heroPhotos = [
     z: 2
   },
   {
-    src: "assets/images/headshot.jpg",
+    src: "assets/images/headshot.JPG",
     alt: "",
     caption: "hi! this is me!",
     side: "left",
