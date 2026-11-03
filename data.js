@@ -93,7 +93,8 @@ export const heroPhotos = [
 
 // Project cards. `summary` is the description, `highlights` the bullet
 // points. Each link in `links` shows as a button on the card; leave it
-// null to hide it.
+// null to hide it. `demo` is a YouTube link, or a video (.mp4/.webm) or
+// .gif path; a file's LIVE DEMO button only appears once that file exists.
 export const PROJECTS = [
   {
     id: "01",
@@ -108,7 +109,8 @@ export const PROJECTS = [
     stack: ["React Native", "Expo", "Express", "MongoDB"],
     links: {
       live: "https://trading-joe-5aa4.vercel.app/",
-      github: "https://github.com/clarissachoi/tradingjoe"
+      github: "https://github.com/clarissachoi/tradingjoe",
+      demo: "https://youtu.be/lsZWH3bfNRQ"
     }
   },
   {
@@ -124,7 +126,8 @@ export const PROJECTS = [
     stack: ["Typescript", "Python", "React"],
     links: {
       live: "https://em-care.vercel.app/",
-      github: "https://github.com/clarissachoi/em"
+      github: "https://github.com/clarissachoi/em",
+      demo: "https://youtu.be/CHnkWFbcuGg"
     }
   },
   {

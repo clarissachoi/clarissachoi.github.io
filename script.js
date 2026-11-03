@@ -514,6 +514,11 @@ function renderCard(project) {
         ${links
           .map((l) => `<a class="project-card__link" href="${l.href}" target="_blank" rel="noopener noreferrer">${l.label}</a>`)
           .join("")}
+        ${
+          project.links.demo
+            ? `<button type="button" class="project-card__link" data-demo="${project.links.demo}" data-demo-title="${project.name}" hidden>LIVE DEMO</button>`
+            : ""
+        }
       </div>
     </article>
   `;
@@ -524,10 +529,80 @@ function renderProjectsGrid() {
   if (!gridEl) return;
 
   gridEl.innerHTML = PROJECTS.map(renderCard).join("");
+
+  // Only reveal a demo button once its file actually loads. YouTube links
+  // can't be checked cross-origin, so those show straight away.
+  gridEl.querySelectorAll("[data-demo]").forEach((btn) => {
+    if (youTubeId(btn.dataset.demo)) {
+      btn.hidden = false;
+      return;
+    }
+    fetch(btn.dataset.demo, { method: "HEAD" })
+      .then((res) => { if (res.ok) btn.hidden = false; })
+      .catch(() => {});
+  });
+}
+
+// Pulls the video id out of youtube.com/watch?v=, youtu.be/ and /shorts/ links.
+function youTubeId(url) {
+  const match = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/);
+  return match ? match[1] : null;
+}
+
+function initDemoModal() {
+  const gridEl = document.getElementById("projects-grid");
+  const modal = document.getElementById("demo-modal");
+  const media = document.getElementById("demo-modal-media");
+  const title = document.getElementById("demo-modal-title");
+  if (!gridEl || !modal || !media || !title) return;
+
+  gridEl.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-demo]");
+    if (!btn) return;
+
+    const src = btn.dataset.demo;
+    title.textContent = `${btn.dataset.demoTitle} // LIVE DEMO`;
+
+    const ytId = youTubeId(src);
+
+    if (ytId) {
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&mute=1&rel=0`;
+      iframe.title = `${btn.dataset.demoTitle} demo`;
+      iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      iframe.allowFullscreen = true;
+      media.replaceChildren(iframe);
+    } else if (/\.(mp4|webm|mov)$/i.test(src)) {
+      const video = document.createElement("video");
+      video.src = src;
+      video.controls = true;
+      video.autoplay = true;
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      media.replaceChildren(video);
+    } else {
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = `${btn.dataset.demoTitle} demo`;
+      media.replaceChildren(img);
+    }
+
+    modal.showModal();
+  });
+
+  // Clicking the backdrop closes the modal.
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.close();
+  });
+
+  // Drop the media on close so the video stops playing.
+  modal.addEventListener("close", () => media.replaceChildren());
 }
 
 renderProjectsCount();
 renderProjectsGrid();
+initDemoModal();
 
 function renderAboutText() {
   const headingEl = document.getElementById("about-heading");

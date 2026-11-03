@@ -882,6 +882,70 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--background);
 }
 
+button.project-card__link {
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.demo-modal {
+  /* As large as the window allows at 16:9, since YouTube picks its
+     quality from the player size. */
+  width: min(92vw, 80rem, calc((90vh - 4rem) * 16 / 9));
+  max-height: 90vh;
+  margin: auto;
+  padding: 0;
+  border: var(--border-width) solid var(--border-frame);
+  background: var(--bg-raised);
+  color: var(--text-primary);
+  box-shadow: 8px 8px 0 rgba(24, 18, 14, 0.15);
+}
+
+.demo-modal::backdrop {
+  background: rgba(24, 18, 14, 0.6);
+}
+
+.demo-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-1) var(--space-2);
+  border-bottom: var(--border-width) solid var(--border);
+}
+
+.demo-modal__close {
+  padding: 0 var(--space-1);
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-size: var(--text-xl);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.demo-modal__close:hover,
+.demo-modal__close:focus-visible {
+  color: var(--accent);
+}
+
+.demo-modal__media iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: calc(90vh - 4rem);
+  border: 0;
+  background: #000;
+}
+
+.demo-modal__media video,
+.demo-modal__media img {
+  display: block;
+  width: 100%;
+  max-height: calc(90vh - 4rem);
+  object-fit: contain;
+  background: #000;
+}
+
 /* ============================
    11. ABOUT
    ============================ */
